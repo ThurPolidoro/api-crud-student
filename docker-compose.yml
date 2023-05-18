@@ -1,0 +1,41 @@
+version: '3.9'
+
+services:
+  db:
+    image: mysql
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      - MYSQL_ROOT_PASSWORD=2Uw7aE3gNvwDNI5Hob
+    ports:
+      - '3307:3306'
+
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - '6379:6379'
+    environment:
+      - REDIS_HOST=${REDIS_HOST}
+      - REDIS_PORT=${REDIS_PORT}
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    volumes: 
+      - cache:/data
+    
+  api-crud-student:
+    build:
+      context: .
+      dockerfile: .docker/Dockerfile
+      target: dev
+    image: thourtlon/api-crud-student:dev
+    container_name: api-crud-student
+    command: "npm run dev"
+    tty: true
+    ports:
+      - "3000:3000"
+      - "9229:9229"
+    volumes:
+      - ./:/app
+
+volumes:
+  cache:
