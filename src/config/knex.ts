@@ -2,7 +2,7 @@ import Knex from 'knex';
 import { env } from '@/config/env'
 
 const HOST = env.MYSQL_HOST || 'localhost';
-const USER = env.MYSQL_USER;
+const USER = 'root';
 const PASSWORD = env.MYSQL_PASS;
 const DATABASE = env.MYSQL_DATABASE;
 const PORT = env.MYSQL_PORT;

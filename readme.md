@@ -28,12 +28,11 @@ Execute o comando para clonar o .env.example nomeando o mesmo para .env
 cp .env.example .env
 ```
 
-Configure o arquivo .env com as informações do desejadas, para evitar possiveis conflitos por padrão deixei a porta MySQL na 3307.
+Configure o arquivo .env com as informações do desejadas, para evitar possiveis conflitos por padrão deixei a porta MySQL na 3307 e por padrão deixei o usuário root como fixo.
 ```sh
 MYSQL_HOST=localhost
-MYSQL_DATABASE=api_crud_students
-MYSQL_USER=root
-MYSQL_PASS=2Uw7aE3gNvwDNI5Hob
+MYSQL_DATABASE=
+MYSQL_PASS=
 MYSQL_PORT=3307
 ```
 
