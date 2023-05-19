@@ -1,9 +1,9 @@
 import { FastifyReply, FastifyRequest, FastifyInstance } from "fastify";
-import logger from '@/config/winston'
 import { z } from "zod";
-import { CreateStudentService } from "@/services/createStudent/CreateStudentService";
 import { StudentRepository } from "@/repository/StudentRepository";
-import { UpdateStudentService } from "@/services/updateStudent/UpdateStudentService";
+import { CreateStudentService } from "@/services/CreateStudentService";
+import { UpdateStudentService } from "@/services/UpdateStudentService";
+import { DeleteStudentService } from "@/services/DeleteStudentService";
 
 async function studentRoutes(app: FastifyInstance) {
   app.get("/", recoverAllStudent);
@@ -23,7 +23,8 @@ async function recoverAllStudent(
   reply: FastifyReply
 ) {
   const studentResponse = await new StudentRepository().findAll();
-  return reply.send(studentResponse);  
+
+  return reply.status(200).send({success: true, message: "Lista de Estudantes foi localizada em nosso sistema com sucesso.", data: studentResponse});
 }
 
 /**
@@ -40,9 +41,12 @@ async function recoverUniqueStudent(
   }); 
 
   const studentData =  studentSchema.parse(request.params);
-
   const studentResponse = await new StudentRepository().findById(studentData.studentId);
-  return reply.send(studentResponse);
+
+  if(!studentResponse)
+    return reply.status(400).send({success: false, message: "Nenhum estudante foi localizado em nosso sistema com este id."});
+
+  return reply.send({success: true, message: "O estudante foi localizado em nosso sistema com sucesso.", data: studentResponse});
 }
 
 /**
@@ -66,8 +70,7 @@ async function createStudent(
   const studentData =  studentSchema.parse(request.body);
   const studentResponse = await new CreateStudentService().createStudent(studentData);
 
-  
-  return reply.send(studentResponse);
+  return reply.status(201).send({success: true, message: "Estudante foi criado em nosso sistema com sucesso.", data: studentResponse});
 }
 
 /**
@@ -91,9 +94,9 @@ async function updateStudent(
 
 
   const studentData =  studentSchema.parse(request.body);
-  const studentResponse = await new UpdateStudentService().updateStudent(studentData);
+  await new UpdateStudentService().updateStudent(studentData);
 
-  return reply.send(studentResponse);
+  return reply.status(200).send({success: true, message: "Os dados do estudante foi atualizado em nosso sistema com sucesso."});
 }
 
 /**
@@ -110,10 +113,9 @@ async function removeStudent(
   }); 
 
   const studentData =  studentSchema.parse(request.body);
-  const studentResult = await new StudentRepository().delete(studentData.id);
-  const studentResponse = {"success": Boolean(studentResult)}
+  await new DeleteStudentService().deleteStudent(studentData.id);
 
-  return reply.send(studentResponse);
+  return reply.status(200).send({success: true, message: "O estudante foi removido de nosso sistema com sucesso."});
 }
 
 export { studentRoutes };
