@@ -1,16 +1,41 @@
 import { v4 as uuid } from 'uuid';
 import  knex from '@/config/knex';
-import { NewStudent } from '@/interfaces/NewStudent';
-import { UpdateStudent } from '@/interfaces/UpdateStudent';
-import { Student } from '@/interfaces/Student';
-import { ListOfStudent } from '@/interfaces/ListOfStudent';
-import { UniqueStudent } from '@/interfaces/UniqueStudent';
+
+type ListOfStudent = {
+  id: string;
+  name: string;
+  classroom?: string; 
+}
+
+type NewStudent  = {
+  name: string,
+  cpf: string,
+  email: string,
+  phone?: string,
+  birthdate?: string,
+  classRoom?: string,
+}
+
+type Student  = {
+  id: string,
+  name: string,
+  cpf: string,
+  email: string,
+  phone?: string,
+  birthdate?: string,
+  classRoom?: string,
+  created_at?: Date,
+  updated_at?: Date
+}
+
 
 class StudentRepository {
+
   async create(newStudent: NewStudent): Promise<string> {
     const student: Student = {
       id: uuid(),
       name: newStudent.name,
+      cpf: newStudent.cpf,
       email: newStudent.email,
       phone: newStudent.phone,
       birthdate: newStudent.birthdate,
@@ -23,18 +48,27 @@ class StudentRepository {
     return student.id;
   }
 
-  async getAll(): Promise<object>{
+  async findAll(): Promise<object>{
     return await knex<ListOfStudent>('students');
   }
 
-  async getUnique(studentId: string){
-    return await knex<UniqueStudent>('students').where('id', studentId).first();
+  async findById(studentId: string){
+    return await knex<Student>('students').where('id', studentId).first();
+  }
+
+  async findByEmail(studentEmail: string){
+    return await knex<Student>('students').where('email', studentEmail).first();
+  }
+
+  async findByCpf(studentCpf: string){
+    return await knex<Student>('students').where('cpf', studentCpf).first();
   }
 
   async update(updateStudent: Student): Promise<boolean>{
     const student: Student = {
         id: updateStudent.id,
         name: updateStudent.name,
+        cpf: updateStudent.cpf,
         email: updateStudent.email,
         phone: updateStudent.phone,
         birthdate: updateStudent.birthdate,
@@ -48,7 +82,7 @@ class StudentRepository {
   }
 
   async delete(studentId: string){
-    return await knex<UniqueStudent>('students').where('id', studentId).del();
+    return await knex<Student>('students').where('id', studentId).del();
   }
 }
 

@@ -23,13 +23,15 @@ USE `api_crud_students`;
 CREATE TABLE IF NOT EXISTS `students` (
   `id` varchar(36) DEFAULT NULL,
   `name` varchar(44) DEFAULT NULL,
+  `cpf` varchar(14) DEFAULT NULL,
   `email` varchar(48) DEFAULT NULL,
   `phone` varchar(17) DEFAULT NULL,
   `birthdate` varchar(10) DEFAULT NULL,
   `classroom` varchar(3) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  UNIQUE KEY `id` (`id`)
+  UNIQUE KEY `id` (`id`),
+  UNIQUE KEY `cpf` (`cpf`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 -- Exportação de dados foi desmarcado.

@@ -22,7 +22,7 @@ async function recoverAllStudent(
   request: FastifyRequest,
   reply: FastifyReply
 ) {
-  const studentResponse = await new StudentRepository().getAll();
+  const studentResponse = await new StudentRepository().findAll();
   return reply.send(studentResponse);  
 }
 
@@ -41,7 +41,7 @@ async function recoverUniqueStudent(
 
   const studentData =  studentSchema.parse(request.params);
 
-  const studentResponse = await new StudentRepository().getUnique(studentData.studentId);
+  const studentResponse = await new StudentRepository().findById(studentData.studentId);
   return reply.send(studentResponse);
 }
 
@@ -56,7 +56,8 @@ async function createStudent(
 ) {
   const studentSchema = z.object({
     name: z.string(),
-    email: z.string().email().optional(),
+    cpf: z.string(),
+    email: z.string().email(),
     phone: z.string().min(16).max(16).optional(),
     birthdate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
     classRoom: z.string().min(2).max(3).optional(),
@@ -81,6 +82,7 @@ async function updateStudent(
   const studentSchema = z.object({
     id: z.string(),
     name: z.string(),
+    cpf: z.string(),
     email: z.string().email(),
     phone: z.string().min(16).max(16),
     birthdate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),

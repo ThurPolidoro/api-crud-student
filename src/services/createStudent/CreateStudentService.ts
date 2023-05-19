@@ -1,42 +1,38 @@
 import logger from '@/config/winston'
-import { CreateStudentDTO } from './CreateStudentDTO'
 import { StudentRepository } from '@/repository/StudentRepository'
 
-type StudentResponse = {
-    id: string,
-    name: string,
-    email?: string,
-    phone?: string,
-    birthdate?: string,
-    classRoom?: string,
+type CreateStudentDTO = {
+  id?: string,
+  name: string,
+  cpf: string,
+  email: string,
+  phone?: string,
+  birthdate?: string,
+  classRoom?: string,
 }
 
 class CreateStudentService {
   
-  public async createStudent(studentData: CreateStudentDTO): Promise<StudentResponse> {
+  public async createStudent(studentData: CreateStudentDTO) {
     logger.info('Iniciando criação do novo estudante.')
     try {
-      const studentId = await new StudentRepository().create(studentData);
-      const studentResponse = await this.prepareResponse(studentId, studentData);
+      const studentRepository = new StudentRepository();
+
+      const studentFounded = await studentRepository.findByCpf(studentData.cpf);
+
+      if(studentFounded)
+      {
+        throw new Error("Já existe um estudante cadastrado com este CPF.");
+      }
+
+      const studentId = await studentRepository.create(studentData);
       
       logger.info('Estudante foi criado com sucesso.');
-      return studentResponse;
-    } catch (error: any) {
+      return { id: studentId };
+    } catch (error) {
       logger.error('Finalização forçada, ocorreu um erro na hora de criar o estudante.');
       throw error;
     }
-  }
-
-  private async prepareResponse(studentId: string, studentData: CreateStudentDTO): Promise<StudentResponse>
-  {
-    return {
-      id: studentId,
-      name: studentData.name,
-      email: studentData.email,
-      phone: studentData.phone,
-      birthdate: studentData.birthdate,
-      classRoom: studentData.classRoom
-    };
   }
 }
 

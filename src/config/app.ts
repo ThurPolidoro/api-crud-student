@@ -1,8 +1,7 @@
 import fastify from 'fastify'
 import { ZodError } from 'zod'
 
-import { routes } from '../api/routes'
-import { env } from './env'
+import { routes } from '@/api/routes'
 
 export const app = fastify()
 
@@ -15,5 +14,7 @@ app.setErrorHandler((error, _, reply) => {
       .send({ message: 'Validation error.', issues: error.format() })
   }
 
-  return reply.status(500).send({ message: 'Internal server error.' })
+  const errorCode = (error.statusCode) ? Number(error.statusCode) : 500;
+
+  return reply.status(errorCode).send({ message: error.message })
 })
